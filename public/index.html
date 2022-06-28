@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yet Another Form Builder</title>
+    <meta property="og:title" content="Form Builder">
+    <meta property="og:site_name" content="Yet Another Form Builder">
+    <meta property="og:url" content=https://formbuilder.phgo.xyz>
+    <meta property="og:description" content="A WYSIWYG form builder to quickly prototype your HTML forms. Extendable so you can add your own fields and exporter!">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content=https://formbuilder.phgo.xyz/assets/demo.png>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/css/bootstrap.min.css" integrity="sha512-T584yQ/tdRR5QwOpfvDfVQUidzfgc2339Lc8uBDtcp/wYu80d7jwBgAxbyMh0a9YM9F8N3tdErpFI8iaGx6x5g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/line-awesome/1.3.0/line-awesome/css/line-awesome.min.css" integrity="sha512-vebUliqxrVkBy3gucMhClmyQP9On/HAWQdKDXRaAlb/FKuTbxkjPKUyqVOxAcGwFDka79eTF+YXwfke1h3/wfg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="assets/style.css">
+</head>
+<body ng-app="FB" ng-controller="FBC" ng-class="{'resizing':isResizing}" ng-cloak>
+    <main>
+        <div ng-if="data.showTable" class="table-container p-3">
+            <div ng-repeat="section in data.sections">
+                <div class="row mb-3 justify-content-between">
+                    <div class="col-md-4">
+                        <div class="input-group mb-3">
+                            <input type="text" ng-model="section.label" class="form-control">
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-secondary" type="button" ng-click="editSection(section)">
+                                    <i class="la la-edit"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-right">
+                        <div class="btn-group">
+                            <button class="btn btn-sm btn-outline-secondary" type="button" ng-if="$index==0" ng-click="addSection()">
+                                <i class="la la-plus"></i> Section
+                            </button>
+                            <button class="btn btn-sm btn-outline-secondary" type="button" ng-if="$index>0" ng-click="moveSectionUp(section)">
+                                <i class="la la-angle-up"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-secondary" type="button" ng-if="$index<data.sections.length-1" ng-click="moveSectionDown(section)">
+                                <i class="la la-angle-down"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <table class="table table-bordered table-sm mb-4">
+                    <thead>
+                        <tr>
+                            <th class="text-center">-</th>
+                            <th class="text-center">Label</th>
+                            <th class="text-center">ID</th>
+                            <th class="text-center">Type</th>
+                            <th class="text-center">Size</th>
+                            <th style="width:50px;" class="text-center">RO</th>
+                            <th style="width:50px;">
+                                <div class="btn-group">
+                                    <button class="btn btn-xs btn-primary" type="button" ng-click="addField(section)">
+                                        <i class="la la-plus"></i>
+                                    </button>
+                                </div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="field in section.fields">
+                            <td class="text-center">
+                                <button class="btn btn-xs" ng-class="{' btn-outline-secondary':!field.selected,'btn-primary':field.selected}" ng-click="selectField(field)">
+                                    {{$index+1}}
+                                </button>
+                            </td>
+                            <td>
+                                <input type="text" ng-model="field.attributes.label" class="form-control form-control-sm">
+                            </td>
+                            <td>
+                                <input type="text" ng-model="field.id" class="form-control form-control-sm">
+                            </td>
+                            <td>
+                                <select class="form-control form-control-sm" ng-model="field.type">
+                                    <option ng-repeat="option in fields" ng-value="option.name">{{option.name}}</option>
+                                </select>
+                            </td>
+                            <td>
+                                <input type="number" min="1" max="12" ng-model="field.size" class="form-control form-control-sm">
+                            </td>
+                            <td class="text-center">
+                                <input type="checkbox" ng-model="field.attributes.readonly">
+                            </td>
+                            <td>
+                                <div class="btn-group">
+                                    <button ng-if="$parent.$index>0||$index>0" class="btn btn-xs btn-outline-secondary" type="button" ng-click="moveFieldUp(section, field)">
+                                        <i class="la la-angle-up"></i>
+                                    </button>
+                                    <button ng-if="$parent.$index<data.sections.length-1||$index<section.fields.length-1" class="btn btn-xs btn-outline-secondary" type="button" ng-click="moveFieldDown(section, field)">
+                                        <i class="la la-angle-down"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div ng-if="!data.showTable&&!hasOutput" class="container pt-4">
+            <div class="row justify-content-center">
+                <div class="col-md-{{section.size}}" ng-repeat="section in data.sections">
+                    <fieldset class="section" ng-class="{'selected':section==selectedSection}">
+                        <legend>
+                            <div class="actions">
+                                <button class="btn btn-sm btn-secondary" ng-if="$index==0" ng-click="addSection()">
+                                    <i class="la la-plus"></i> Section
+                                </button>
+                                <button class="btn btn-sm btn-secondary" ng-if="$index>0" ng-click="moveSectionUp(section)">
+                                    <i class="la la-angle-up"></i>
+                                </button>
+                                <button class="btn btn-sm btn-secondary" ng-if="$index<data.sections.length-1" ng-click="moveSectionDown(section)">
+                                    <i class="la la-angle-down"></i>
+                                </button>
+                                <button class="btn btn-sm btn-secondary" ng-click="addField(section)">
+                                    <i class="la la-plus"></i> Field
+                                </button>
+                            </div>
+                            <div ng-click="editSection(section)">
+                                {{section.label || '&nbsp;'}}
+                            </div>
+                        </legend>
+                        <div class="row">
+                            <div class="col-12 col-md-{{field.size}} field" ng-class="{'selected':field.selected}" ng-repeat="field in section.fields" ng-click="selectField(field)">
+                                <field-content field="field" fields="fields"></field-content>
+                                <div class="actions" ng-if="field.selected">
+                                    <button class="btn btn-xs btn-secondary" ng-click="copyField(section, field)">
+                                        <i class="la la-copy"></i> Copy
+                                    </button>
+                                    <button ng-if="$parent.$parent.$index>0||$index>0" class="btn btn-xs btn-secondary" ng-click="moveFieldUp(section, field)">
+                                        <i class="la la-angle-up"></i>
+                                    </button>
+                                    <button ng-if="$parent.$parent.$index<data.sections.length-1||$index<section.fields.length-1" class="btn btn-xs btn-secondary" ng-click="moveFieldDown(section, field)">
+                                        <i class="la la-angle-down"></i>
+                                    </button>
+                                </div>
+                                <div class="handle" ng-if="field.selected" ng-mousedown="startResize(field)"></div>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+            </div>
+        </div>
+        <editor ng-if="!data.showTable&&hasOutput" value="output" lang="exporter.lang"></editor>
+        <!-- Used to calculate column width -->
+        <div class="container"><div class="row"></div></div>
+    </main>
+    <aside>
+        <div ng-if="!selectedField&&!selectedSection" class="p-3">
+            <div class="form-group d-flex justify-content-between">
+                <div>
+                    <button class="btn btn-secondary btn-sm" type="button" ng-click="newForm()">
+                        <i class="la la-file"></i> New
+                    </button>
+                </div>
+                <div>
+                    <button class="btn btn-secondary btn-sm" type="button" ng-click="download()">
+                        <i class="la la-save"></i> Save
+                    </button>
+                    <button class="btn btn-secondary btn-sm" type="button" ng-click="upload()">
+                        <i class="la la-folder-open"></i> Open
+                    </button>
+                </div>
+            </div>
+            <hr>
+            <div class="form-group">
+                <label for="input-project-name">
+                    Project Name
+                </label>
+                <input type="text" ng-model="data.projectName" class="form-control" id="input-project-name">
+            </div>
+            <div class="form-group">
+                <div class="custom-control custom-switch">
+                    <input type="checkbox" class="custom-control-input" id="input-project-mode" ng-model="data.showTable">
+                    <label class="custom-control-label" for="input-project-mode">
+                        <span ng-if="data.showTable">
+                            Field Summary
+                        </span>
+                        <span ng-if="!data.showTable">
+                            Form Editor
+                        </span>
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <select id="input-export" ng-model="$parent.exporter" class="form-control">
+                    <option value="">Export...</option>
+                    <option ng-repeat="exp in exporters" ng-value="exp">{{exp.label}}</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <div class="btn-group">
+                    <button type="button" class="btn btn-sm btn-primary" ng-if="exporter" ng-click="export(exporter)">
+                        <i class="la la-code"></i> Generate
+                    </button>
+                    <button type="button" class="btn btn-sm btn-secondary" ng-if="$parent.hasOutput" ng-click="downloadExport(exporter)">
+                        <i class="la la-download"></i> Download
+                    </button>
+                    <button type="button" class="btn btn-sm btn-secondary" ng-if="$parent.hasOutput" ng-click="$parent.$parent.hasOutput=false">
+                        <i class="la la-check"></i> Done
+                    </button>
+                </div>
+            </div>
+            <div class="form-group pt-5 text-center" style="font-size:0.8em;opacity:0.6;">
+                Source on <a href="https://github.com/pahanggo/yet-another-form-builder" target="_blank">GitHub</a>.
+            </div>
+        </div>
+        <div ng-if="!selectedField&&selectedSection" class="p-3">
+            <div class="form-group justify-content-between d-flex">
+                <div>
+                </div>
+                <div>
+                    <button type="button" ng-if="data.sections.length>1" class="btn btn-sm btn-danger" ng-click="removeSection(selectedSection)">
+                        <i class="la la-trash"></i> Section
+                    </button>
+                    <button type="button" class="btn btn-sm btn-secondary" ng-click="$parent.selectedSection=null">
+                        <i class="la la-check"></i> Done
+                    </button>
+                </div>
+            </div>
+            <hr>
+            <div class="form-group">
+                <label for="input-label">
+                    Label
+                </label>
+                <input type="text" class="form-control" name="input-label" ng-model="selectedSection.label" id="input-label">
+            </div>
+            <div class="form-group">
+                <label for="input-size">
+                    Size
+                </label>
+                <input type="number" step="1" min="1" max="12" class="form-control" name="input-size" ng-model="selectedSection.size" id="input-size">
+            </div>
+        </div>
+        <div ng-if="selectedField" class="p-3">
+            <div class="form-group justify-content-between d-flex">
+                <div>
+                    <button type="button" class="btn btn-sm btn-secondary" ng-click="prevField()">
+                        <i class="la la-angle-left"></i>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-secondary" ng-click="nextField()">
+                        <i class="la la-angle-right"></i>
+                    </button>
+                </div>
+                <div>
+                    <button type="button" class="btn btn-sm btn-danger" ng-click="removeField(selectedField)">
+                        <i class="la la-trash"></i> Field
+                    </button>
+                    <button type="button" class="btn btn-sm btn-secondary" ng-click="unselectField()">
+                        <i class="la la-check"></i> Done
+                    </button>
+                </div>
+            </div>
+            <hr>
+            <div class="form-group">
+                <label for="input-id">
+                    ID
+                </label>
+                <input type="text" class="form-control" name="input-id" ng-model="selectedField.id" id="input-id">
+            </div>
+            <div class="row no-gutter">
+                <div class="col-md-6 pr-md-1">
+                    <div class="form-group">
+                        <label for="input-type">
+                            Type
+                        </label>
+                        <select class="form-control" name="input-type" id="input-type" ng-model="selectedField.type">
+                            <option ng-repeat="field in fields" ng-value="field.name">{{field.name}}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-6 pl-md-1">
+                    <div class="form-group">
+                        <label for="input-size">
+                            Size
+                        </label>
+                        <input type="number" class="form-control" name="input-size" ng-model="selectedField.size" id="input-size">
+                    </div>
+                </div>
+            </div>
+            <field-form field="selectedField" fields="fields"></field-form>
+        </div>
+    </aside>
+</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.34.0-dev.20220627/min/vs/loader.min.js" integrity="sha512-6bIYsGqvLpAiEBXPdRQeFf5cueeBECtAKJjIHer3BhBZNTV3WLcLA8Tm3pDfxUwTMIS+kAZwTUvJ1IrMdX8C5w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.8.3/angular.min.js" integrity="sha512-KZmyTq3PLx9EZl0RHShHQuXtrvdJ+m35tuOiwlcZfs/rE7NZv29ygNA8SFCkMXTnYZQK2OX0Gm2qKGfvWEtRXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="assets/app.localstorage.js"></script>
+<script src="assets/app.exporters.js"></script>
+<script src="assets/app.fields.js"></script>
+<script src="assets/app.js"></script>
+</html>

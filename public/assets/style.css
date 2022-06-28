@@ -1,0 +1,105 @@
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+    display: none !important;
+}
+
+html, body, aside, main {
+    min-height: 100%;
+    height: 100%;
+}
+
+body {
+    overflow-y: scroll;
+}
+
+main {
+    display: inline-block;
+    vertical-align: top;
+    width: calc(100vw - 334px);
+}
+
+aside {
+    width: 320px;
+    border-left: 1px solid rgb(240, 240, 240);
+    position: fixed;
+    right: 0px;
+    top: 0px;
+    max-height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    z-index: 1;
+}
+
+editor {
+    height: 100vh;
+    width: 100%;
+    border: 1px solid gray;
+    display: block;
+}
+
+editor .overflowingContentWidgets {
+    display: none!important;
+}
+
+.btn-group-xs>.btn, .btn-xs {
+    padding: 0.1rem 0.3rem;
+    font-size: .5rem;
+    line-height: 1.5;
+    border-radius: 0.15rem;
+}
+
+body.resizing {
+    cursor: ew-resize!important;
+}
+
+.section {
+    margin-bottom: 2em;
+}
+
+.section > legend {
+    position: relative;
+    border-bottom: 1px solid #e8e8e8;
+    padding-bottom: 0.5em;
+    margin-bottom: 1em;
+    cursor: pointer;
+}
+
+.section > legend > .actions {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+}
+
+.row > .field {
+    cursor: pointer!important;
+    position: relative;
+    user-select: none;
+    margin-bottom: 1em;
+}
+
+.row > .field label {
+    white-space: nowrap;
+    overflow: hidden;
+    max-width: 100%;
+    text-overflow: ellipsis;
+}
+
+.row > .field.selected > .actions {
+    position: absolute;
+    top: 0px;
+    right: 15px;
+}
+
+.section.selected legend {
+    text-decoration: underline;
+}
+
+.row > div .handle {
+    position: absolute;
+    cursor: ew-resize;
+    top: 0px;
+    bottom: 0px;
+    right: 0px;
+    width: 6px;
+    background-color: red;
+    z-index: 1;
+}
