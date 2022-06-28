@@ -26,7 +26,8 @@ aside {
     max-height: 100vh;
     overflow-y: auto;
     overflow-x: hidden;
-    z-index: 1;
+    z-index: 2;
+    background-color: white;
 }
 
 editor {
@@ -102,4 +103,36 @@ body.resizing {
     width: 6px;
     background-color: red;
     z-index: 1;
+}
+
+.menu-btn {
+    display: none;
+}
+
+@media (max-width: 575.98px) {
+    main {
+        height: auto;
+        width: 100%;
+        padding-bottom: 80px;
+    }
+
+    aside {
+        transition-duration: 0.5s;
+        transition-property: transform;
+        transform: translate(320px, 0px);
+        padding-bottom: 80px;
+    }
+
+    .sidebar-shown aside {
+        transform: translate(0px, 0px);
+    }
+
+    .menu-btn {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 3;
+        background: white;
+        display: inline-block;
+    }
 }

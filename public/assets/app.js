@@ -333,6 +333,15 @@ angular.module('FB', ['FBFields', 'FBExporters', 'FBLocalStorage'])
         }
 
         /**
+         * UI Stuff
+         */
+
+        $scope.showSidebar = false;
+        $scope.toggleSidebar = function() {
+            $scope.showSidebar = !$scope.showSidebar;
+        }
+
+        /**
          * Make sure changes are persisted on LocalStorage
          */
 

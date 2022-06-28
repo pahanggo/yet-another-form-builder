@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/line-awesome/1.3.0/line-awesome/css/line-awesome.min.css" integrity="sha512-vebUliqxrVkBy3gucMhClmyQP9On/HAWQdKDXRaAlb/FKuTbxkjPKUyqVOxAcGwFDka79eTF+YXwfke1h3/wfg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="assets/style.css">
 </head>
-<body ng-app="FB" ng-controller="FBC" ng-class="{'resizing':isResizing}" ng-cloak>
+<body ng-app="FB" ng-controller="FBC" ng-class="{'resizing':isResizing,'sidebar-shown':showSidebar}" ng-cloak>
     <main>
         <div ng-if="data.showTable" class="table-container p-3">
             <div ng-repeat="section in data.sections">
@@ -285,6 +285,9 @@
             <field-form field="selectedField" fields="fields"></field-form>
         </div>
     </aside>
+    <button class="btn btn-outline-secondary menu-btn" type="button" ng-click="toggleSidebar()">
+        <i class="la la-cog"></i>
+    </button>
 </body>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.34.0-dev.20220627/min/vs/loader.min.js" integrity="sha512-6bIYsGqvLpAiEBXPdRQeFf5cueeBECtAKJjIHer3BhBZNTV3WLcLA8Tm3pDfxUwTMIS+kAZwTUvJ1IrMdX8C5w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.8.3/angular.min.js" integrity="sha512-KZmyTq3PLx9EZl0RHShHQuXtrvdJ+m35tuOiwlcZfs/rE7NZv29ygNA8SFCkMXTnYZQK2OX0Gm2qKGfvWEtRXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
